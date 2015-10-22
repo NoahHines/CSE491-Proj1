@@ -50,24 +50,97 @@ def quicksort(list, start, end):
     else:
         return
 
+def getSimFMR(threshold, scores):
+    totalSum = 0.0
+    for i in scores:
+        if (i >= threshold):
+            totalSum += 1
+    # print "totalSum: " + str(totalSum)
+    return (totalSum/float(len(scores)))
 
+def getSimFNMR(threshold, scores):
+    totalSum = 0.0
+    # print "Score length: " + str(len(scores))
+    for i in scores:
+        if (i < threshold):
+            totalSum += 1
+            # print str(i)
+    # print "totalSum: " + str(totalSum)
+    return (totalSum/float(len(scores)))
 
+def getDistFMR(threshold, scores):
+    totalSum = 0.0
+    for i in scores:
+        if (i < threshold):
+            totalSum += 1
+    # print "totalSum: " + str(totalSum)
+    return (totalSum/float(len(scores)))
+
+def getDistFNMR(threshold, scores):
+    totalSum = 0.0
+    # print "Score length: " + str(len(scores))
+    for i in scores:
+        if (i >= threshold):
+            totalSum += 1
+            # print str(i)
+    # print "totalSum: " + str(totalSum)
+    return (totalSum/float(len(scores)))
 
 def getScores(title, filename):
 	scores = [int(float(line.rstrip('\n'))) for line in open(filename+".score")]
 	quicksort(scores, 0, len(scores)-1)
-	print scores
-	print "\n\n"
 	return scores
 
+def displayHistogram(gen, imp, title):
+    bins = np.linspace(0, 100, 100)
+    plt.title(title)
+    plt.hist(gen, bins, alpha=0.5, label='Genuine')
+    plt.hist(imp, bins, alpha=0.5, label='Imposter')
+    plt.legend(loc='upper right')
+    plt.show()
+
+def displayROC(gen, imp, title, isSim):
+    x = gen
+    y = imp
+    # Only works if there are equal number of scores in gen and imp
+    if (isSim == 1):
+        for i in range(0, 450):
+            x[i] = getSimFMR(i, imp)
+            y[i] = getSimFNMR(i, gen)
+            if (x[i] == y[i]):
+                eer = x[i]
+    else:
+        for i in range(0, 450):
+            x[i] = getDistFMR(i, imp)
+            y[i] = getDistFNMR(i, gen)
+            if (x[i] == y[i]):
+                eer = x[i]
+    plt.title(title + " (EER = " + str(eer) + ")")
+    plt.scatter(x, y)
+    plt.plot(eer)
+    P.ylim([0,1])
+    P.xlim([0,1])
+    plt.show()
+    return eer
+
+# Finger histogram
+gen = getScores("finger", "scores/finger_genuine")
+imp = getScores("finger", "scores/finger_impostor")
+displayHistogram(gen, imp, "Finger Scores")
+
+# Hand histogram
+gen = getScores("finger", "scores/hand_genuine")
+imp = getScores("finger", "scores/hand_impostor")
+displayHistogram(gen, imp, "Hand Scores")
+
+gen = getScores("finger", "scores/finger_genuine")
+imp = getScores("finger", "scores/finger_impostor")
+eer = displayROC(gen, imp, "Finger ROC", 1)
+print "Equal Error Rate (EER) = " + str(eer)
 
 gen = getScores("finger", "scores/hand_genuine")
 imp = getScores("finger", "scores/hand_impostor")
+eer = displayROC(gen, imp, "Face ROC", 0)
+print "Equal Error Rate (EER) = " + str(eer)
 
-bins = np.linspace(0, 100, 100)
-
-plt.hist(gen, bins, alpha=0.5, label='x')
-plt.hist(imp, bins, alpha=0.5, label='y')
-plt.legend(loc='upper right')
-plt.show()
 

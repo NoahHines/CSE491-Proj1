@@ -66,36 +66,87 @@ def getVariance(mean, scores):
 def getDPrime(mean1, mean2, stdDev1, stdDev2):
     return str(float( (math.sqrt(2)*abs(mean1-mean2)) / (math.sqrt(stdDev1 + stdDev2)) ) )
 
+def getSimFMR(threshold, scores):
+    totalSum = 0.0
+    for i in scores:
+        if (i >= threshold):
+            totalSum += 1
+    # print "totalSum: " + str(totalSum)
+    return (totalSum/float(len(scores)))
 
-def getScores(title, filename):
-	scores = [int(float(line.rstrip('\n'))) for line in open(filename+"_genuine.score")]
-	quicksort(scores, 0, len(scores)-1)
+def getSimFNMR(threshold, scores):
+    totalSum = 0.0
+    # print "Score length: " + str(len(scores))
+    for i in scores:
+        if (i < threshold):
+            totalSum += 1
+            # print str(i)
+    # print "totalSum: " + str(totalSum)
+    return (totalSum/float(len(scores)))
+
+def getDistFMR(threshold, scores):
+    totalSum = 0.0
+    for i in scores:
+        if (i < threshold):
+            totalSum += 1
+    # print "totalSum: " + str(totalSum)
+    return (totalSum/float(len(scores)))
+
+def getDistFNMR(threshold, scores):
+    totalSum = 0.0
+    # print "Score length: " + str(len(scores))
+    for i in scores:
+        if (i >= threshold):
+            totalSum += 1
+            # print str(i)
+    # print "totalSum: " + str(totalSum)
+    return (totalSum/float(len(scores)))
+
+def getScores(title, filename, threshold):
+	gen = [int(float(line.rstrip('\n'))) for line in open(filename+"_genuine.score")]
+	imp = [int(float(line.rstrip('\n'))) for line in open(filename+"_impostor.score")]
+	totalScores = gen
+    	totalScores.extend(imp)
+	quicksort(gen, 0, len(gen)-1)
+    	quicksort(imp, 0, len(imp)-1)
+    	quicksort(totalScores, 0, len(totalScores)-1)
     	print("\n" + title + "\n------------------")
+        print("Minimum score: " + str(totalScores[0]))
+   	print("Maximum score: " + str(totalScores[len(totalScores)-1]))
+    	print("\n")
 	print("Scores for: Genuine " + title)
-	print("Minimum score: " + str(scores[0]))
-	print("Maximum score: " + str(scores[len(scores)-1]))
-	genMean = getMean(scores)
+	genMean = getMean(gen)
 	print("Mean: " + genMean)
-    	genVariance = getVariance(int(float(genMean)), scores)
+    	genVariance = getVariance(int(float(genMean)), gen)
     	print("Variance: " + genVariance)
-
-    	scores = [int(float(line.rstrip('\n'))) for line in open(filename+"_impostor.score")]
-    	quicksort(scores, 0, len(scores)-1)
+    	quicksort(imp, 0, len(imp)-1)
         print("\n");
     	print("Scores for: Imposter " + title)
-    	print("Minimum score: " + str(scores[0]))
-    	print("Maximum score: " + str(scores[len(scores)-1]))
-    	impMean = getMean(scores)
+    	impMean = getMean(imp)
    	print("Mean: " + impMean)
-    	impVariance = getVariance(int(float(impMean)), scores)
+    	impVariance = getVariance(int(float(impMean)), imp)
     	print("Variance: " + impVariance)
         print("\n")
     	print("D-Prime: " + getDPrime(float(genMean), float(impMean), float(genVariance), float(impVariance)))
-	print("------------------\n")
+        print("\n")
+        print("------------------\n\n")
 
-getScores("Finger", "scores/finger")
-getScores("Face", "scores/hand")
+getScores("Finger", "scores/finger", 32.0)
+filename = "scores/finger"
+threshold = 32
+gen = [int(float(line.rstrip('\n'))) for line in open(filename+"_genuine.score")]
+imp = [int(float(line.rstrip('\n'))) for line in open(filename+"_impostor.score")]
+print("Size of gen: " + str(len(gen)))
+print("FMR: " + str(getSimFMR(threshold, imp)))
+print("FNMR: " + str(getSimFNMR(threshold, gen)))
 
-
+getScores("Hand", "scores/hand", 45.0)
+filename = "scores/hand"
+threshold = 45
+gen = [int(float(line.rstrip('\n'))) for line in open(filename+"_genuine.score")]
+imp = [int(float(line.rstrip('\n'))) for line in open(filename+"_impostor.score")]
+print("Size of gen: " + str(len(gen)))
+print("FMR: " + str(getDistFMR(threshold, imp)))
+print("FNMR: " + str(getDistFNMR(threshold, gen)))
 
 
