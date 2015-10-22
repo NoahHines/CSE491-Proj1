@@ -103,18 +103,21 @@ def displayROC(gen, imp, title, isSim):
     x = gen
     y = imp
     # Only works if there are equal number of scores in gen and imp
+
     if (isSim == 1):
         for i in range(0, 450):
             x[i] = getSimFMR(i, imp)
             y[i] = getSimFNMR(i, gen)
             if (x[i] == y[i]):
                 eer = x[i]
+
     else:
         for i in range(0, 450):
             x[i] = getDistFMR(i, imp)
             y[i] = getDistFNMR(i, gen)
             if (x[i] == y[i]):
                 eer = x[i]
+
     plt.title(title + " (EER = " + str(eer) + ")")
     plt.scatter(x, y)
     plt.plot(eer)
@@ -131,7 +134,7 @@ displayHistogram(gen, imp, "Finger Scores")
 # Hand histogram
 gen = getScores("finger", "scores/hand_genuine")
 imp = getScores("finger", "scores/hand_impostor")
-displayHistogram(gen, imp, "Hand Scores")
+displayHistogram(gen, imp, "Face Scores")
 
 gen = getScores("finger", "scores/finger_genuine")
 imp = getScores("finger", "scores/finger_impostor")
