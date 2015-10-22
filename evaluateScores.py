@@ -136,7 +136,6 @@ filename = "scores/finger"
 threshold = 32
 gen = [int(float(line.rstrip('\n'))) for line in open(filename+"_genuine.score")]
 imp = [int(float(line.rstrip('\n'))) for line in open(filename+"_impostor.score")]
-print("Size of gen: " + str(len(gen)))
 print("FMR: " + str(getSimFMR(threshold, imp)))
 print("FNMR: " + str(getSimFNMR(threshold, gen)))
 
@@ -145,7 +144,6 @@ filename = "scores/hand"
 threshold = 45
 gen = [int(float(line.rstrip('\n'))) for line in open(filename+"_genuine.score")]
 imp = [int(float(line.rstrip('\n'))) for line in open(filename+"_impostor.score")]
-print("Size of gen: " + str(len(gen)))
 print("FMR: " + str(getDistFMR(threshold, imp)))
 print("FNMR: " + str(getDistFNMR(threshold, gen)))
 
